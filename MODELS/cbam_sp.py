@@ -127,7 +127,7 @@ class CBAMSP1(nn.Module):
         self.no_spatial=no_spatial
         if not no_spatial:
             self.SpatialGate = SpatialGate()
-    def forward(self, x):
+    def forward(self, x, xx):
         x_out = self.ChannelGate(x)
         if not self.no_spatial:
             x_out, spp_att = self.SpatialGate(x_out)

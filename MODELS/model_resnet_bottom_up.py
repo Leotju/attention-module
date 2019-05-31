@@ -43,7 +43,7 @@ class BasicBlock(nn.Module):
             residual = self.downsample(x)
 
         if not self.cbam is None:
-            out, sp_att = self.cbam(out)
+            out, sp_att = self.cbam(out, out)
 
         out += residual
         out = self.relu(out)
