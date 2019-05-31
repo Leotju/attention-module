@@ -225,7 +225,7 @@ class ResNetBU(nn.Module):
         x = self.fc(x)
         return x
 
-def ResidualNet(network_type, depth, num_classes, att_type):
+def ResidualNetBU(network_type, depth, num_classes, att_type):
 
     assert network_type in ["ImageNet", "CIFAR10", "CIFAR100"], "network type should be ImageNet or CIFAR10 / CIFAR100"
     assert depth in [18, 34, 50, 101], 'network depth should be 18, 34, 50 or 101'

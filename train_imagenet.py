@@ -14,6 +14,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
 from MODELS.model_resnet import *
+from MODELS.model_resnet_bottom_up import *
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 model_names = sorted(name for name in models.__dict__
@@ -71,6 +72,9 @@ def main():
     # create model
     if args.arch == "resnet":
         model = ResidualNet( 'ImageNet', args.depth, 1000, args.att_type )
+    elif args.arch == 'resnetbu':
+        model = ResidualNetBU( 'ImageNet', args.depth, 1000, args.att_type )
+
 
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss().cuda()
