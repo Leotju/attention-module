@@ -89,7 +89,7 @@ class SpatialGateBU(nn.Module):
     def forward(self, x, sp_att_pre):
         x_compress = self.compress(x)
         x_out = self.spatial(x_compress)
-        att_fusion = self.spatial_fusion(torch.cat(sp_att_pre, x_out), 1)
+        att_fusion = self.spatial_fusion(torch.cat((sp_att_pre, x_out), 1))
         scale = F.sigmoid(att_fusion)  # broadcasting
         return x * scale, att_fusion
 
