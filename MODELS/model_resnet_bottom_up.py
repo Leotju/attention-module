@@ -153,13 +153,14 @@ class ResNetBU(nn.Module):
                 nn.BatchNorm2d(planes * block.expansion),
             )
 
-        layers = []
+        layers = nn.ModuleList()
         layers.append(block(self.inplanes, planes, stride, downsample, use_cbam=att_type=='CBAM'))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
             layers.append(block(self.inplanes, planes, use_cbam=att_type=='CBAM'))
 
-        return nn.Sequential(*layers)
+        # return nn.Sequential(*layers)
+        return layers
 
     def forward(self, x):
         x = self.conv1(x)
@@ -168,21 +169,31 @@ class ResNetBU(nn.Module):
         if self.network_type == "ImageNet":
             x = self.maxpool(x)
 
-        x, sp_att0 = self.att1(x)
+        x, sp_att = self.att1(x)
+        for layer1 in self.layer1:
+            x, sp_att = layer1(x, sp_att)
+        for layer2 in self.layer2:
+            x, sp_att = layer2(x, sp_att)
+        for layer3 in self.layer3:
+            x, sp_att = layer3(x, sp_att)
+        for layer4 in self.layer4:
+            x, sp_att0 = layer4(x, sp_att0)
 
-        x, sp_att1 = self.layer1(x, sp_att0)
-        if not self.bam1 is None:
-            x = self.bam1(x)
 
-        x, sp_att2 = self.layer2(x, sp_att1)
-        if not self.bam2 is None:
-            x = self.bam2(x)
 
-        x, sp_att3 = self.layer3(x, sp_att2)
-        if not self.bam3 is None:
-            x = self.bam3(x)
-
-        x, _ = self.layer4(x, sp_att3)
+        # x, sp_att1 = self.layer1(x, sp_att0)
+        # if not self.bam1 is None:
+        #     x = self.bam1(x)
+        #
+        # x, sp_att2 = self.layer2(x, sp_att1)
+        # if not self.bam2 is None:
+        #     x = self.bam2(x)
+        #
+        # x, sp_att3 = self.layer3(x, sp_att2)
+        # if not self.bam3 is None:
+        #     x = self.bam3(x)
+        #
+        # x, _ = self.layer4(x, sp_att3)
 
         if self.network_type == "ImageNet":
             x = self.avgpool(x)
