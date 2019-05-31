@@ -11,46 +11,9 @@ def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
                      padding=1, bias=False)
 
+
+
 class BasicBlock(nn.Module):
-    expansion = 1
-
-    def __init__(self, inplanes, planes, stride=1, downsample=None, use_cbam=False):
-        super(BasicBlock, self).__init__()
-        self.conv1 = conv3x3(inplanes, planes, stride)
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.relu = nn.ReLU(inplace=True)
-        self.conv2 = conv3x3(planes, planes)
-        self.bn2 = nn.BatchNorm2d(planes)
-        self.downsample = downsample
-        self.stride = stride
-
-        if use_cbam:
-            self.cbam = CBAMSP1( planes, 16 )
-        else:
-            self.cbam = None
-
-    def forward(self, x, xx):
-        residual = x
-
-        out = self.conv1(x)
-        out = self.bn1(out)
-        out = self.relu(out)
-
-        out = self.conv2(out)
-        out = self.bn2(out)
-
-        if self.downsample is not None:
-            residual = self.downsample(x)
-
-        if not self.cbam is None:
-            out, sp_att = self.cbam(out)
-
-        out += residual
-        out = self.relu(out)
-
-        return out, sp_att
-
-class BasicBlockBU(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, use_cbam=False):
@@ -159,10 +122,12 @@ class ResNetBU(nn.Module):
         else:
             self.bam1, self.bam2, self.bam3 = None, None, None
 
-        self.layer1 = self._make_layer(BasicBlock, 64,  layers[0], att_type=att_type)
-        self.layer2 = self._make_layer(BasicBlockBU, 128, layers[1], stride=2, att_type=att_type)
-        self.layer3 = self._make_layer(BasicBlockBU, 256, layers[2], stride=2, att_type=att_type)
-        self.layer4 = self._make_layer(BasicBlockBU, 512, layers[3], stride=2, att_type=att_type)
+        self.att1 = self.CBAMSP1(64, 16)
+
+        self.layer1 = self._make_layer(block, 64,  layers[0], att_type=att_type)
+        self.layer2 = self._make_layer(block, 128, layers[1], stride=2, att_type=att_type)
+        self.layer3 = self._make_layer(block, 256, layers[2], stride=2, att_type=att_type)
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, att_type=att_type)
 
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
@@ -203,7 +168,9 @@ class ResNetBU(nn.Module):
         if self.network_type == "ImageNet":
             x = self.maxpool(x)
 
-        x, sp_att1 = self.layer1(x, x)
+        x, sp_att0 = self.att1(x)
+
+        x, sp_att1 = self.layer1(x, sp_att0)
         if not self.bam1 is None:
             x = self.bam1(x)
 
