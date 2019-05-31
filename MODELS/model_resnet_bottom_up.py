@@ -173,13 +173,10 @@ class ResNetBU(nn.Module):
         for layer1 in self.layer1:
             x, sp_att = layer1(x, sp_att)
         for layer2 in self.layer2:
-            sp_att = F.avg_pool2d(sp_att, kernel_size=2, stride=2)
             x, sp_att = layer2(x, sp_att)
         for layer3 in self.layer3:
-            sp_att = F.avg_pool2d(sp_att, kernel_size=2, stride=2)
             x, sp_att = layer3(x, sp_att)
         for layer4 in self.layer4:
-            sp_att = F.avg_pool2d(sp_att, kernel_size=2, stride=2)
             x, sp_att = layer4(x, sp_att)
 
 

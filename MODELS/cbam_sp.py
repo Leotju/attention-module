@@ -87,6 +87,7 @@ class SpatialGateBU(nn.Module):
         self.spatial_fusion = BasicConv(2, 1, kernel_size, stride=1, padding=(kernel_size - 1) // 2, relu=False)
 
     def forward(self, x, sp_att_pre):
+        sp_att_pre = F.adaptive_avg_pool2d(sp_att_pre, output_size=(x.size(2), x.size(3)))
         x_compress = self.compress(x)
         x_out = self.spatial(x_compress)
         att_fusion = self.spatial_fusion(torch.cat((sp_att_pre, x_out), 1))
