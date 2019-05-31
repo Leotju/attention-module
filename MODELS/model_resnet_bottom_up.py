@@ -29,7 +29,7 @@ class BasicBlock(nn.Module):
         else:
             self.cbam = None
 
-    def forward(self, x):
+    def forward(self, x, xx):
         residual = x
 
         out = self.conv1(x)
@@ -43,7 +43,7 @@ class BasicBlock(nn.Module):
             residual = self.downsample(x)
 
         if not self.cbam is None:
-            out, sp_att = self.cbam(out, out)
+            out, sp_att = self.cbam(out)
 
         out += residual
         out = self.relu(out)
