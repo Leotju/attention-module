@@ -203,7 +203,7 @@ class ResNetBU(nn.Module):
         if self.network_type == "ImageNet":
             x = self.maxpool(x)
 
-        x, sp_att1 = self.layer1(x)
+        x, sp_att1 = self.layer1(x, x)
         if not self.bam1 is None:
             x = self.bam1(x)
 
