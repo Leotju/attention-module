@@ -17,7 +17,7 @@ class BasicBlock(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, use_cbam=False):
-        super(BasicBlockBU, self).__init__()
+        super(BasicBlock, self).__init__()
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = nn.BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
@@ -122,7 +122,7 @@ class ResNetBU(nn.Module):
         else:
             self.bam1, self.bam2, self.bam3 = None, None, None
 
-        self.att1 = self.CBAMSP1(64, 16)
+        self.att1 = CBAMSP1(64, 16)
 
         self.layer1 = self._make_layer(block, 64,  layers[0], att_type=att_type)
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2, att_type=att_type)
