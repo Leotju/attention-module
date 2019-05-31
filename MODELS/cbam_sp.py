@@ -100,7 +100,7 @@ class CBAMSP2(nn.Module):
         self.ChannelGate = ChannelGate(gate_channels, reduction_ratio, pool_types)
         self.no_spatial = no_spatial
         if not no_spatial:
-            self.SpatialGate = SpatialGateBU()
+            self.SpatialGateBU = SpatialGateBU()
 
     def forward(self, x, sp_att_pre):
         x_out = self.ChannelGate(x)
