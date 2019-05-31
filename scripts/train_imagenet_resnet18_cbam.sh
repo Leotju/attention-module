@@ -1,9 +1,9 @@
 python train_imagenet.py \
-			--ngpu 8 \
-			--workers 20 \
+			--ngpu 1 \
+			--workers 8 \
 			--arch resnet --depth 18 \
 			--epochs 100 \
 			--batch-size 256 --lr 0.1 \
 			--att-type CBAM \
-			--prefix RESNET50_IMAGENET_CBAM \
-			./data/ImageNet/
+			--prefix ../RESNET18_IMAGENET_CBAM \
+			/vpalab/diak_dataset/imagenet/
