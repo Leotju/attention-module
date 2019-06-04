@@ -54,7 +54,7 @@ parser.add_argument('--resume', default='', type=str, metavar='PATH',
 parser.add_argument("--seed", type=int, default=1234, metavar='BS', help='input batch size for training (default: 64)')
 parser.add_argument("--prefix", type=str, required=True, metavar='PFX', help='prefix for logging & checkpoint saving')
 parser.add_argument('--evaluate', dest='evaluate', action='store_true', help='evaluation only')
-parser.add_argument('--att-type', type=str, choices=['BAM', 'CBAM'], default=None)
+parser.add_argument('--att-type', type=str, choices=['BAM', 'CBAM', 'CAS_SE'], default=None)
 
 best_prec1 = 0
 
