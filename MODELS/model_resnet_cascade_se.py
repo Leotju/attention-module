@@ -3,7 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 from torch.nn import init
-from .cbam import *
+# from .cbam import *
+from .cascade_se import *
 from .bam import *
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -25,7 +26,7 @@ class BasicBlock(nn.Module):
         self.stride = stride
 
         if use_cbam:
-            self.cbam = CBAM(planes, 16)
+            self.cbam = CAS_SE(planes, 16)
         else:
             self.cbam = None
 
@@ -67,7 +68,7 @@ class Bottleneck(nn.Module):
         self.stride = stride
 
         if use_cbam:
-            self.cbam = CBAM( planes * 4, 16 )
+            self.cbam = CAS_SE( planes * 4, 16 )
         else:
             self.cbam = None
 
@@ -149,10 +150,10 @@ class ResNet(nn.Module):
             )
 
         layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample, use_cbam=att_type=='CBAM'))
+        layers.append(block(self.inplanes, planes, stride, downsample, use_cbam=att_type=='CAS_SE'))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
-            layers.append(block(self.inplanes, planes, use_cbam=att_type=='CBAM'))
+            layers.append(block(self.inplanes, planes, use_cbam=att_type=='CAS_SE'))
 
         return nn.Sequential(*layers)
 
@@ -185,7 +186,7 @@ class ResNet(nn.Module):
         x = self.fc(x)
         return x
 
-def ResidualNet(network_type, depth, num_classes, att_type):
+def ResidualNetCAS(network_type, depth, num_classes, att_type):
 
     assert network_type in ["ImageNet", "CIFAR10", "CIFAR100"], "network type should be ImageNet or CIFAR10 / CIFAR100"
     assert depth in [18, 34, 50, 101], 'network depth should be 18, 34, 50 or 101'
